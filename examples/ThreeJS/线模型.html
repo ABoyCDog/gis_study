@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8>
+    <title>线模型</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            /* background: url('img/bgImg.jpg') no-repeat fixed; */
+            background-size: 100% 100%;
+        }
+    </style>
+</head>
+<body>
+<script src="https://cdn.bootcss.com/three.js/92/three.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/renderers/CSS2DRenderer.js"></script>
+<script type="module">
+    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/OrbitControls.js';
+    window.onload = function(){
+        initThreeScene();
+        //物体的事件交互
+        window.addEventListener('mousedown', mouseDownFuc);
+        window.addEventListener('mousemove', mouseMoveFuc);
+        window.addEventListener('click', mouseClickFuc);
+    }
+
+    
+    let scene, camera, renderer, labelRenderer, myBall, lineMesh;
+
+    // 初始化场景、相机、渲染器以及mesh
+    function initThreeScene() {
+        // 场景
+        scene = new THREE.Scene();
+
+        // 相机
+        camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 2000 );
+        camera.position.set( 0, 50, 300 ); 
+        
+        // 渲染器
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });//antialias: true;让渲染的平面是光滑的，alpha: true;让渲染的3d背景透明。
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        document.body.appendChild(renderer.domElement );
+        // 创建CSS2DRenderer渲染器
+        labelRenderer = new THREE.CSS2DRenderer();
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.domElement.style.position = 'absolute';
+        labelRenderer.domElement.style.top = '0px';
+        document.body.appendChild(labelRenderer.domElement );
+
+        // 给场景添加一个环境光
+        let ambientLight = new THREE.AmbientLight( 0xf5f5f5);
+        scene.add( ambientLight );
+
+        //mesh
+        // let ball = new THREE.SphereGeometry( 50, 100, 100 );//25:球半径 第一个100：水平分割面的数量. 第二个100：垂直分割面的数量.
+        // let ballColor = new THREE.MeshPhongMaterial( { color: 0x333333 } );
+        // myBall = new THREE.Mesh( ball , ballColor );
+        // myBall.name = 'myBall';
+        // scene.add( myBall );
+        let box = new THREE.BoxGeometry(100, 100, 100);
+        let material = new THREE.LineBasicMaterial({ color: 0x0000ff });
+        // lineMesh = new THREE.Line(box,material);//线模型对象(连续绘制)
+        // lineMesh = new THREE.LineLoop(box, material); //线模型对象(连续闭合绘制)
+        lineMesh = new THREE.LineSegments(box,material);//线模型对象(断续绘制)
+        lineMesh.name = 'lineMesh';
+        scene.add(lineMesh);
+
+        //辅助线
+        // x轴标签
+        const xAxesDiv = document.createElement('div');
+        xAxesDiv.className = 'xlabel';
+        xAxesDiv.textContent = 'x';
+        xAxesDiv.style.background = 'none';
+        xAxesDiv.style.color = 'red';
+        const xlabel = new THREE.CSS2DObject(xAxesDiv);
+        xlabel.position.set(100, 0, 0);
+        lineMesh.add(xlabel)
+        // y轴标签
+        const yAxesDiv = document.createElement('div');
+        yAxesDiv.className = 'ylabel';
+        yAxesDiv.textContent = 'y';
+        yAxesDiv.style.background = 'none';
+        yAxesDiv.style.color = 'red';
+        const ylabel = new THREE.CSS2DObject(yAxesDiv);
+        ylabel.position.set(0, 100, 0);
+        lineMesh.add(ylabel)
+        // z轴标签
+        const zAxesDiv = document.createElement('div');
+        zAxesDiv.className = 'zlabel';
+        zAxesDiv.textContent = 'z';
+        zAxesDiv.style.background = 'none';
+        zAxesDiv.style.color = 'red';
+        const zlabel = new THREE.CSS2DObject(zAxesDiv);
+        zlabel.position.set(0, 0, 100);
+        lineMesh.add(zlabel)
+        
+        // 添加空间辅助线
+        const axes = new THREE.AxesHelper(100);
+        axes.position.set(-3, -3, -3);
+        scene.add( axes );
+        // let grid = new THREE.GridHelper( 400, 30, 0xcccccc, 0xcccccc );
+        // scene.add( grid );
+
+        // 控制器
+        let controls =new OrbitControls(camera, labelRenderer.domElement);
+        controls.enableZoom =true; //允许缩放
+        controls.minDistance = 1; //设置相机移动距离
+        controls.maxDistance = 2000;
+        controls.enableRotate =true;
+
+        render();
+
+        function render() { 
+            requestAnimationFrame( render );
+            renderer.render( scene, camera );
+            labelRenderer.render( scene, camera );
+        } 
+        window.onresize = function () {
+            camera.aspect = window.innerWidth / window.innerHeight; //相机重置可视范围
+            camera.updateProjectionMatrix();
+            renderer.setSize( window.innerWidth, window.innerHeight ); //渲染器重新渲染可视范围
+            labelRenderer.setSize( window.innerWidth, window.innerHeight ); //渲染器重新渲染可视范围
+        }
+    }
+
+    // 事件交互
+    function mouseDownFuc (e) {
+        let raycaster = new THREE.Raycaster();//光线投射，用于确定鼠标点击位置
+        let mouse = new THREE.Vector2();//创建二维平面
+        let intersects = getSelsectOBj(mouse,raycaster, e);
+        if(intersects.length > 0) {
+            console.log(intersects[0])
+            if(intersects[0].object.name == 'lineMesh') {
+                lineMesh.position.y = 50;
+            }
+        }
+    }
+    function mouseMoveFuc (e) {
+        let raycaster = new THREE.Raycaster();//光线投射，用于确定鼠标点击位置
+        let mouse = new THREE.Vector2();//创建二维平面
+        let intersects = getSelsectOBj(mouse,raycaster, e);
+        if(intersects.length > 0) {
+            if(intersects[0].object.name == 'lineMesh') {
+                lineMesh.material =  new THREE.MeshPhongMaterial( { color: 'orange'});
+                document.getElementsByTagName('body')[0].style.cursor = 'pointer';
+            }
+        }else {
+            lineMesh.material =  new THREE.MeshPhongMaterial( { color: 0xff0000});
+            document.getElementsByTagName('body')[0].style.cursor = 'default';
+        }
+    }
+    function mouseClickFuc(e) {
+        let raycaster = new THREE.Raycaster();//光线投射，用于确定鼠标点击位置
+        let mouse = new THREE.Vector2();//创建二维平面
+        let intersects = getSelsectOBj(mouse, raycaster, e);
+        if(intersects.length > 0) {
+            console.log(123, e, intersects);
+            // if(intersects[0].object.name == 'lineMesh') {
+
+            // }
+        } else {}
+    }
+    //获取事件操作对象
+    function getSelsectOBj(mouse, raycaster, e) {
+        //将html坐标系转化为webgl坐标系，并确定鼠标点击位置
+        mouse.x =  e.clientX / renderer.domElement.clientWidth*2-1;
+        mouse.y =  -(e.clientY / renderer.domElement.clientHeight*2)+1;
+        //以camera为z坐标，确定所点击物体的3D空间位置
+        raycaster.setFromCamera(mouse, camera);
+        //确定所点击位置上的物体数量
+        let intersects = raycaster.intersectObjects(scene.children, true);
+        return intersects;
+    }
+</script>
+</body>
+</html>

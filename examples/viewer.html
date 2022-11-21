@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="../Build/Cesium/Cesium.js"></script>
+        <link rel="stylesheet" href="../Build/Cesium/Widgets/widgets.css">
+    </head>
+    <body>
+        <div id="cesiumContainer"></div>
+    </body>
+    <script>
+        const viewer = new Cesium.Viewer("cesiumContainer", {
+            animation: false,
+            timeline: false,
+            homeButton: true,
+            geocoder: false,
+            navigationHelpButton: false,
+            sceneMode: Cesium.SceneMode.SCENE3D,
+            terrainProvider : Cesium.createWorldTerrain(),
+            baseLayerPicker: true,
+            selectionIndicator: false,
+            vrButton: true, // 设置vr模式
+            infoBox: false,
+            sceneModePicker: false,
+            selectionIndicator: false,
+            navigationInstructionsInitiallyVisible: false,
+            // skyBox: false,
+            fullScreenButton: true
+        });
+        // viewer.flyto(entity, {
+        //     offset: new Cesium.HeadingPitchRange(heading, pitch, range)
+        // })
+        // Cesiun.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(-50, -20, 20, 20);
+    </script>
+</html>

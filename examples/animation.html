@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="../Build/Cesium/Cesium.js"></script>
+        <link rel="stylesheet" href="../Build/Cesium/Widgets/widgets.css">
+        <!-- 自定义独立于viewer的animation组件 111 -->
+        <link rel="stylesheet" href="../Build/Cesium/Widgets/Animation/Animation.css">
+    </head>
+    <body>
+        <div id="cesiumContainer"></div>
+        <!-- 自定义独立于viewer的animation组件 222 -->
+        <div id="animationContainer" class="cesium-viewer-animationContainer" style="z-index: 100"></div>
+    </body>
+    <script>
+        const viewer = new Cesium.Viewer("cesiumContainer", {
+            animation: false,
+            timeline: false,
+            homeButton: true,
+            geocoder: false,
+            fullScreenButton: true
+        });
+
+        // 自定义独立于viewer的animation组件 333
+        // 自定义独立于viewer的clock组件，不过还是基于Clock类，因为自定义绘制是需要使用svg绘制的比较麻烦
+        let clock = new Cesium.Clock();
+        let clockViewModel = new Cesium.ClockViewModel(clock);
+        let viewModel = new Cesium.AnimationViewModel(clockViewModel);
+        let widget = new Cesium.Animation('animationContainer', viewModel);
+    </script>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="../Build/Cesium/Cesium.js"></script>
+        <link rel="stylesheet" href="../Build/Cesium/Widgets/widgets.css">
+    </head>
+    <style>
+        .toolbar {
+            position: absolute;
+            width: 800px;
+            height: 50px;
+            z-index: 100;
+        }
+        .btn {
+            position: relative;
+            top: 10px;
+            left: 20px;
+            width: 80px;
+            height: 36px;
+            background: blue;
+            color: white;
+        }
+    </style>
+    <body>
+        <div id="cesiumContainer">
+            <div id="toolbar" class="toolbar">
+                <button class="btn" onclick="zoomTo1()">定点飞</button>
+                <button class="btn" onclick="flyTo('1')">动画飞1</button>
+                <button class="btn" onclick="flyTo('2')">动画飞2</button>
+                <button class="btn" onclick="removeAllEntity()">移除</button>
+            </div>
+        </div>
+    </body>
+    <script>
+        const viewer = new Cesium.Viewer("cesiumContainer", {
+            homeButton: true,
+            fullScreenButton: true
+        });
+
+        const entityLayer = new Cesium.CustomDataSource('emtityCollection');
+        viewer.dataSources.add(entityLayer);
+
+        // 创建实体entity
+        const entity1 = entityLayer.entities.add({
+            name: 'box1',
+            position: Cesium.Cartesian3.fromDegrees(119.39, 39.9),
+            box: {
+                dimensions: new Cesium.Cartesian3(40000.0, 40000.0, 20000.0),
+                material: Cesium.Color.RED,
+            }
+        })
+        const entity2 = entityLayer.entities.add({
+            name: 'box2',
+            position: Cesium.Cartesian3.fromDegrees(99.39, 29.9),
+            box: {
+                dimensions: new Cesium.Cartesian3(40000.0, 40000.0, 20000.0),
+                material: Cesium.Color.BLUE,
+            }
+        })
+        const entity3 = entityLayer.entities.add({
+            name: 'box3',
+            position: Cesium.Cartesian3.fromDegrees(69.39, 39.9),
+            box: {
+                dimensions: new Cesium.Cartesian3(40000.0, 40000.0, 20000.0),
+                material: Cesium.Color.GREEN,
+            }
+        })
+
+        // zoomTo1
+        function zoomTo1() {
+            viewer.zoomTo(entity1, new Cesium.HeadingPitchRange(
+                Cesium.Math.toRadians(0.0),
+                Cesium.Math.toRadians(-45),
+                Cesium.Math.toRadians(0),
+                0,
+            ))
+        }
+
+        // flyTo1
+        function flyTo(str) {
+            // viewer的flyTo
+            let entity = entity1;
+            switch (str) {
+                case '1': {
+                    entity = entity1;
+                    break;
+                }
+                case '2': {
+                    entity = entity2;
+                    break;
+                }
+                case '3': {
+                    entity = entity3;
+                    break;
+                }
+                default: {
+                    entity = entity1;
+                    break;
+                }
+            }
+            viewer.flyTo(entity, {
+                offset: new Cesium.HeadingPitchRange(
+                    Cesium.Math.toRadians(0.0),
+                    Cesium.Math.toRadians(-45),
+                    Cesium.Math.toRadians(0),
+                    0,
+                )
+            })
+            console.log(11111111, entityLayer.entities._entities._array.length);
+        }
+        
+        // 将实体收入collection
+        entityLayer.entities.add(entity1);
+        function removeAllEntity() {
+            console.log('移除前', entityLayer.entities._entities._array.length);
+            entityLayer.entities.removeAll();
+            console.log('移除后', viewer.dataSources, entityLayer.entities._entities._array.length);
+        }
+        
+
+    </script>
+</html>

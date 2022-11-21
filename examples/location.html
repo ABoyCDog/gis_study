@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="../Build/Cesium/Cesium.js"></script>
+        <link rel="stylesheet" href="../Build/Cesium/Widgets/widgets.css">
+    </head>
+    <body>
+        <div id="cesiumContainer">
+            <div id="toolbar" style="position: absolute;width:300px;height: 50px;z-index: 100;">
+                <button
+                    style="
+                        position: relative;
+                        top: 10px;
+                        left: 20px;
+                        width: 80px;
+                        height: 36px;
+                        background: blue;
+                        color: white;"
+                    onclick="zoomTo()"
+                >zoomTo</button>
+                <button style="position: relative;top: 10px;left: 20px;width: 80px;height: 36px;background: blue;color: white;" onclick="flyTo()">flyTo</button>
+            </div>
+        </div>
+    </body>
+    <script>
+        const viewer = new Cesium.Viewer("cesiumContainer", {
+            homeButton: true,
+            fullScreenButton: true
+        });
+
+        // 实现定位主要有两种类中的方法实现，Viewer类和Camera类，
+        // 其中再分为直接的视图切换和有动画的切换
+
+        // 创建实体entity
+        const entity = viewer.entities.add({
+            // name: 'rect',
+            // rectangle: {
+            //     coordinates: Cesium.Rectangle.fromDegrees(-160.0, 0.0, -120.0, 30.0),
+            //     material: Cesium.Color.GREEN.withAlpha(1.0),
+            //     rotation: Cesium.Math.toRadians(-45),
+            //     height: 100.0,
+            //     outline: true,
+            //     outlineColor: Cesium.Color.BLUE,
+            // }
+            name: 'box',
+            position: Cesium.Cartesian3.fromDegrees(119.39, 39.9),
+            box: {
+                dimensions: new Cesium.Cartesian3(40000.0, 40000.0, 20000.0),
+                material: Cesium.Color.RED,
+            }
+        })
+
+        // zoomTo
+        function zoomTo() {
+            viewer.zoomTo(entity, new Cesium.HeadingPitchRange(
+                Cesium.Math.toRadians(0.0),
+                Cesium.Math.toRadians(-45),
+                Cesium.Math.toRadians(0),
+                0,
+            ))
+        }
+
+        // flyTo
+        function flyTo() {
+            // viewer的flyTo
+            // viewer.flyTo(entity, {
+            //     offset: new Cesium.HeadingPitchRange(
+            //         Cesium.Math.toRadians(0.0),
+            //         Cesium.Math.toRadians(-45),
+            //         Cesium.Math.toRadians(0),
+            //         0,
+            //     )
+            // })
+
+            // camera的flyTo
+            viewer.camera.flyTo({
+                duration: 1,
+                destination: Cesium.Cartesian3.fromDegrees(120, 32, 200000),
+                orientation: {
+                    pitch: Cesium.Math.toRadians(-30),
+                },
+            });
+        }
+        
+
+    </script>
+</html>

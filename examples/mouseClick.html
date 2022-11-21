@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="../Build/Cesium/Cesium.js"></script>
+        <link rel="stylesheet" href="../Build/Cesium/Widgets/widgets.css">
+    </head>
+    <body>
+        <div id="cesiumContainer"></div>
+    </body>
+    <script>
+        const viewer = new Cesium.Viewer("cesiumContainer", {
+            homeButton: true,
+            fullScreenButton: true
+        });
+
+        viewer.screenSpaceEventHandler.setInputAction((e) => {
+            console.log('点击事件：', e);
+
+            const pick = viewer.scene.pick(e.position); // 获取地图左键点击位置的信息
+            console.log('00000', pick); // undefined 因为没有entity
+            // pick.id: 如果地图上添加billboard等,点击后,pick.id是添加的元素,pick.id.id就是feature的id,可以以此区分多个billboard被点击
+            
+            // 点击处的世界坐标
+            // 但是当pitch为-90（也就是垂直地面）且高度较小时获取不到
+            const worldPosition = viewer.scene.pickPosition(e.position);
+            console.log('11111', worldPosition);
+
+            // 获取点击处的屏幕坐标并转换为射线ray，即弧度形式
+            const pickRay = viewer.camera.getPickRay(e.position);
+            console.log('22222', pickRay);
+            const worldP = viewer.globe.pick(pickRay, viewer.scene);
+            console.log('333333', worldP);
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK); 
+    </script>
+</html>

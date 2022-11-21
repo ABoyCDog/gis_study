@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"></meta>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+        <title>Cesium内嵌ThreeJS的旋转立方体(BoxGeometry)</title>
+        <style>
+            html,body{
+                margin: 0;
+                padding: 0;
+            }
+            #cesiumContainer,
+            #threeContainer{
+                width: 100%;
+                height: 100%;
+            }
+            #threeContainer{
+                width: 200px;
+                height: 200px;
+                position: absolute;
+                z-index: 2;
+                top: 10px;
+                left: 10px;
+                /* border: 1px solid red; */
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="cesiumContainer"></div>
+        <div id="threeContainer"></div>
+
+        <link rel="stylesheet" href="../../Build/Cesium/Widgets/widgets.css">
+        <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+        <script src="../../Build/Cesium/Cesium.js"></script>
+        <script src="https://cdn.bootcss.com/three.js/92/three.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/renderers/CSS2DRenderer.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/utils/CameraUtils.js"></script>
+        <script type="module">
+            // import * as THREE from "three";
+            // import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+            import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/OrbitControls.js';
+            // import { CSS2DRenderer } from 'https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/renderers/CSS2DRenderer.js';
+
+            let CesiumViewer = null;
+            const threeViewer = {
+                renderer: null,
+                labelRenderer: null,
+                scene: null,
+                camera: null,
+                geometry: null,
+                controls: null,
+            }
+
+            init();
+
+            function init() {
+                initCesium();
+                intitRenderer();
+                initScene();
+                initCamera();
+                initMesh();
+                initControls();
+                // syncCamera();
+                loop();
+            }
+
+            // 初始化Cesium
+            function initCesium() {
+                CesiumViewer = new Cesium.Viewer('cesiumContainer')
+
+                const entity = CesiumViewer.entities.add({
+                    name: 'box',
+                    position: Cesium.Cartesian3.fromDegrees(106.64393272, 26.62361880, 100),
+                    box: {
+                        dimensions: new Cesium.Cartesian3(600, 600, 600),
+                        // fill: false,
+                        outline: true,
+                        outlineColor: Cesium.Color.RED,
+                        outlineWidth: 12,
+                    },
+                })
+                CesiumViewer.zoomTo(entity)
+            }
+            
+            // 初始化渲染器
+            function intitRenderer() {
+                // 初始化渲染器
+                threeViewer.renderer = new THREE.WebGLRenderer({ alpha: true });
+                threeViewer.renderer.setSize(200, 200); //设置宽和高
+                document.getElementById("threeContainer").appendChild(threeViewer.renderer.domElement);
+                
+                // 创建CSS2DRenderer渲染器
+                threeViewer.labelRenderer = new THREE.CSS2DRenderer();
+                threeViewer.labelRenderer.setSize(200, 200);
+                threeViewer.labelRenderer.domElement.style.position = 'absolute';
+                threeViewer.labelRenderer.domElement.style.top = '0px';
+                document.getElementById("threeContainer").appendChild(threeViewer.labelRenderer.domElement);
+            }
+
+            // 初始化场景
+            function initScene() {
+                threeViewer.scene = new THREE.Scene();
+            }
+
+            // 初始化相机
+            function initCamera() {
+                threeViewer.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000000); //实例化相机
+                threeViewer.camera.position.set(0, 0, 18);
+            }
+
+            // 创建模型mesh
+            function initMesh() {
+                threeViewer.geometry = new THREE.BoxGeometry( 6, 6, 6 ); //创建几何体
+                threeViewer.geometry.computeBoundingSphere();
+                const material = [];
+                const colors = [ // 六个面涂上不同颜色
+                    { color: 0xff0000 },
+                    { color: 0x00ff00 },
+                    { color: 0x0000ff },
+                    { color: 0xff00ff },
+                    { color: 0xffff00 },
+                    { color: 0x00ffff }
+                ];
+                colors.forEach(item => {
+                    material.push(new THREE.MeshBasicMaterial(item)); //创建材质
+                })
+                const cube = new THREE.Mesh( threeViewer.geometry, material ); //创建网格
+                threeViewer.scene.add( cube ); //将网格添加到场景
+
+                // x轴标签
+                const xAxesDiv = document.createElement('div');
+                xAxesDiv.className = 'xlabel';
+                xAxesDiv.textContent = 'x';
+                xAxesDiv.style.background = 'none';
+                xAxesDiv.style.color = 'red';
+                const xlabel = new THREE.CSS2DObject(xAxesDiv);
+                xlabel.position.set(6, -3, -3);
+                cube.add(xlabel)
+                // y轴标签
+                const yAxesDiv = document.createElement('div');
+                yAxesDiv.className = 'ylabel';
+                yAxesDiv.textContent = 'y';
+                yAxesDiv.style.background = 'none';
+                yAxesDiv.style.color = 'red';
+                const ylabel = new THREE.CSS2DObject(yAxesDiv);
+                ylabel.position.set(-3, 6, -3);
+                cube.add(ylabel)
+                // z轴标签
+                const zAxesDiv = document.createElement('div');
+                zAxesDiv.className = 'zlabel';
+                zAxesDiv.textContent = 'z';
+                zAxesDiv.style.background = 'none';
+                zAxesDiv.style.color = 'red';
+                const zlabel = new THREE.CSS2DObject(zAxesDiv);
+                zlabel.position.set(-3, -3, 6);
+                cube.add(zlabel)
+                
+                // 添加空间辅助线
+                const axes = new THREE.AxesHelper(8.5);
+                axes.position.set(-3, -3, -3);
+                threeViewer.scene.add( axes );
+            }
+
+            // 控制器
+            function initControls() {
+                threeViewer.controls = new OrbitControls(threeViewer.camera, threeViewer.labelRenderer.domElement);
+                threeViewer.controls.enablePan = false; // 相机平移
+                threeViewer.controls.enableZoom = false; // 相机缩放
+                threeViewer.controls.enableDamping = true; // 阻尼（惯性），开启后必须在动画循环中调用update()
+				// threeViewer.controls.dampingFactor = 0.1;
+				threeViewer.controls.screenSpacePanning = false;
+				// threeViewer.controls.minDistance = 100;
+				// threeViewer.controls.maxDistance = 500;
+				// threeViewer.controls.maxPolarAngle = Math.PI / 2;
+                // threeViewer.controls.maxDistance = 4.5;
+                // threeViewer.controls.addEventListener( 'change', (e) => {
+                //     console.log(e);
+                // }); // call this only in static scenes (i.e., if there is no animation loop)
+            }
+
+            // 动画
+            function loop() {
+                requestAnimationFrame(loop); //循环调用函数
+                // cube.rotation.x += 0.01; //每帧网格模型的沿x轴旋转0.01弧度
+                // cube.rotation.y += 0.02; //每帧网格模型的沿y轴旋转0.02弧度
+                threeViewer.controls.update(); // 更新控制器
+                cesiumRender(); // 渲染Cesium
+                threeRender(); // 渲染three
+            }
+
+            //渲染
+            function cesiumRender() {
+                CesiumViewer.render();
+            }
+            function threeRender() {
+                threeViewer.renderer.render( threeViewer.scene, threeViewer.camera );
+                threeViewer.labelRenderer.render( threeViewer.scene, threeViewer.camera ); 
+            }
+
+            // 同步相机
+            function syncCamera() {
+                // // 创建模型变换矩阵，设置整个three.js场景在地球上的位置、旋转、缩放等参数。
+                // const origin = Cesium.Cartesian3.fromDegrees(106.64393272, 26.62361880, 100);
+                // // 这里不用eastNorthUpToFixedFrame是因为three.js场景默认y轴朝上
+                // const modelMatrix = Cesium.Transforms.northUpEastToFixedFrame(origin);
+                // // 使用模型变换矩阵构建局部坐标系
+                // const referenceFrame = {
+                //     matrix: modelMatrix,
+                //     inverseMatrix: Cesium.Matrix4.inverse(modelMatrix, new Cesium.Matrix4())
+                // }
+                // console.log(123, threeViewer.geometry.boundingSphere);
+                // CesiumViewer.scene.preRender.addEventListener(() => {
+                //     // 同步相机 将Cesium转为threejs相机
+                //     THREE.CameraUtils.toPerspectiveCamera3js(CesiumViewer.camera, threeViewer.camera, referenceFrame)
+                //     threeRender();
+                // })
+                // // 将Cesium相机定位到threejs场景
+                // let boundingSphere = Cesium.BoundingSphere.clone(threeViewer.geometry.boundingSphere);
+                // Cesium.Matrix4.multiplyByPoint(modelMatrix, boundingSphere.center, boundingSphere.center);
+                // CesiumViewer.camera.flyToBoundingSphere(boundingSphere);
+                threeViewer.camera.fov = Cesium.Math.toDegrees(CesiumViewer.camera.frustum.fovy) // ThreeJS FOV is vertical
+                // threeViewer.camera.updateProjectionMatrix();
+                let cartToVec = function (cart) {
+                    return new THREE.Vector3(cart.x, cart.y, cart.z);
+                };
+
+                // for (let id in _3Dobjects) {
+                //     minWGS84 = _3Dobjects[id].minWGS84;
+                //     maxWGS84 = _3Dobjects[id].maxWGS84;
+                //     // convert lat/long center position to Cartesian3
+                //     let center = Cesium.Cartesian3.fromDegrees((minWGS84[0] + maxWGS84[0]) / 2, (minWGS84[1] + maxWGS84[1]) / 2);
+                //     // get forward direction for orienting model
+                //     let centerHigh = Cesium.Cartesian3.fromDegrees((minWGS84[0] + maxWGS84[0]) / 2, (minWGS84[1] + maxWGS84[1]) / 2, 1);
+                //     // use direction from bottom left to top left as up-vector
+                //     let bottomLeft = cartToVec(Cesium.Cartesian3.fromDegrees(minWGS84[0], minWGS84[1]));
+                //     let topLeft = cartToVec(Cesium.Cartesian3.fromDegrees(minWGS84[0], maxWGS84[1]));
+                //     let latDir = new THREE.Vector3().subVectors(bottomLeft, topLeft).normalize();
+                //     // configure entity position and orientation
+                //     _3Dobjects[id].threeMesh.position.copy(center);
+                //     _3Dobjects[id].threeMesh.lookAt(centerHigh.x, centerHigh.y, centerHigh.z);
+                //     _3Dobjects[id].threeMesh.up.copy(latDir);
+                // }
+                // threeViewer.camera.matrixAutoUpdate = false;
+                let cvm = CesiumViewer.camera.viewMatrix;
+                let civm = CesiumViewer.camera.inverseViewMatrix;
+
+                threeViewer.camera.lookAt(new THREE.Vector3(0,0,0));
+
+                threeViewer.camera.matrixWorld.set(
+                    civm[0], civm[4], civm[8 ], civm[12],
+                    civm[1], civm[5], civm[9 ], civm[13],
+                    civm[2], civm[6], civm[10], civm[14],
+                    civm[3], civm[7], civm[11], civm[15]
+                );
+                threeViewer.camera.matrixWorldInverse.set(
+                    cvm[0], cvm[4], cvm[8 ], cvm[12],
+                    cvm[1], cvm[5], cvm[9 ], cvm[13],
+                    cvm[2], cvm[6], cvm[10], cvm[14],
+                    cvm[3], cvm[7], cvm[11], cvm[15]
+                );
+
+                // 设置three宽高
+                three.camera.aspect = 1;
+                threeViewer.camera.updateProjectionMatrix();
+                threeViewer.renderer.setSize(200, 200);
+                threeViewer.renderer.clear();
+                threeViewer.renderer.render(threeViewer.scene, threeViewer.camera);
+            }
+            
+        </script>
+    </body>
+</html>

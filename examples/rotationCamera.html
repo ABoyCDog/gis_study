@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="../Build/Cesium/Cesium.js"></script>
+        <link rel="stylesheet" href="../Build/Cesium/Widgets/widgets.css">
+        <!-- 自定义独立于viewer的animation组件 111 -->
+        <link rel="stylesheet" href="../Build/Cesium/Widgets/Animation/Animation.css">
+    </head>
+    <style>
+        .toolbar {
+            position: absolute;
+            width: 800px;
+            height: 50px;
+            z-index: 100;
+        }
+        .btn {
+            position: relative;
+            top: 10px;
+            left: 20px;
+            width: 80px;
+            height: 36px;
+            background: blue;
+            color: white;
+        }
+    </style>
+    <body>
+        <div id="cesiumContainer">
+            <div id="toolbar" class="toolbar">
+                <button class="btn" onclick="rotate()">转起来！</button>
+            </div>
+        </div>
+    </body>
+    <script>
+        const viewer = new Cesium.Viewer("cesiumContainer", {
+            animation: false,
+            timeline: false,
+            homeButton: true,
+            geocoder: false,
+            fullScreenButton: true
+        });
+
+        function rotate() {
+            rotateCamera({
+                lng:116.404125, 
+                lat:39.914714, 
+                pitch: -45, 
+                height: 800
+            });
+        }
+
+        // 相机绕点环绕飞行
+        function rotateCamera(options){
+            var position = Cesium.Cartesian3.fromDegrees(options.lng, options.lat, 0.0);
+            // 相机看点的角度，如果大于0那么则是从地底往上看，所以要为负值，这里取-30度
+            var pitch = Cesium.Math.toRadians(options.pitch);
+            // 给定飞行一周所需时间，比如30s, 那么每秒转动度数
+            var angle = 360 / 30;
+            // 给定相机距离点多少距离飞行
+            var distance = options.height;
+            var startTime = Cesium.JulianDate.fromDate(new Date());
+    
+            var stopTime = Cesium.JulianDate.addSeconds(startTime, 30, new Cesium.JulianDate());
+    
+            viewer.clock.startTime = startTime.clone();  // 开始时间
+            viewer.clock.stopTime = stopTime.clone();     // 结速时间
+            viewer.clock.currentTime = startTime.clone(); // 当前时间
+            viewer.clock.clockRange = Cesium.ClockRange.CLAMPED; // 行为方式
+            viewer.clock.clockStep = Cesium.ClockStep.SYSTEM_CLOCK; // 时钟设置为当前系统时间; 忽略所有其他设置。
+            // 相机的当前heading
+            var initialHeading = viewer.camera.heading;
+            var Exection = function TimeExecution() {
+                // 当前已经过去的时间，单位s
+                var delTime = Cesium.JulianDate.secondsDifference(viewer.clock.currentTime, viewer.clock.startTime);
+                // 根据过去的时间，计算偏航角的变化
+                var heading = Cesium.Math.toRadians(delTime * angle) + initialHeading;
+    
+                viewer.camera.lookAt(position, new Cesium.HeadingPitchRange(heading, pitch, distance));
+    
+                if (Cesium.JulianDate.compare(viewer.clock.currentTime, viewer.clock.stopTime) >= 0) {
+                    viewer.clock.onTick.removeEventListener(Exection);
+                }
+            };
+            viewer.clock.onTick.addEventListener(Exection);
+        }
+    </script>
+</html>
