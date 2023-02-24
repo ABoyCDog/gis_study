@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自定义着色器</title>
+    <style>
+        body,html {
+            /* set margin to 0 and overflow to hidden, to
+             use the complete page */
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+    <script id="vertexShader" type="x-shader/x-vertex">
+        void main() {
+            gl_Position= projectionMatrix * modelViewMatrix * vec4(position,1.);
+        }
+    </script>
+    <script id="fragmentShader" type="x-shader/x-fragment">
+        uniform vec2 u_resolution;
+        uniform float u_time;
+
+        void main() {
+            gl_FragColor=vec4(u_time,0.5,0.0,1.0);
+        }
+    </script>
+
+</body>
+    <script src="./index.js" type="module"></script>
+
+</html>

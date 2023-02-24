@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视角锁定</title>
+    <style>
+        body,html {
+            /* set margin to 0 and overflow to hidden, to
+             use the complete page */
+            margin: 0;
+            overflow: hidden;
+        }
+        #control{
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 50%;
+            transform: translateX(-50%);
+            color: #000;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 1 linear;
+        }
+        #control:hover{
+            color: rgba(0, 0, 0, 0.678);
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div id="control">Click to start</div>
+
+</body>
+    <script src="./index.js" type="module"></script>
+
+</html>
