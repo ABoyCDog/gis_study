@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拖拽移动</title>
+    <style>
+        body,html {
+            /* set margin to 0 and overflow to hidden, to
+             use the complete page */
+            margin: 0;
+            overflow: hidden;
+        }
+        #openTransform{
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 10px;
+            cursor: pointer;
+        }
+        #openTransform:hover{
+            color:#fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="openTransform">编辑</div>
+</body>
+    <script src="./index.js" type="module"></script>
+
+</html>

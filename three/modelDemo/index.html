@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模型加载index</title>
+    <style>
+        body,html {
+            /* set margin to 0 and overflow to hidden, to
+             use the complete page */
+            margin: 0;
+            overflow: hidden;
+        }
+        .thePavilion{
+            position: absolute;
+            right: 0;
+            top: 0;
+            color: #fff;
+            cursor: pointer;
+        }
+        .mask{
+            background-color: #000;
+            position: absolute;
+            z-index: 10000;
+            width: 100%;
+            height: 100%;
+        }
+        .process{
+            position: absolute;
+            color: cyan;
+            top: 50%;
+            left: 45%;
+            transform: translateX(-50%);
+            transform: translateY(-50%);
+            font-size: 48px;
+        }
+        .downLoad{
+            position: absolute;
+            left: 200px;
+            top: 20px;
+            cursor: pointer;
+            font-size: 36px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <a class="downLoad">下载</a>
+
+<div class="thePavilion">
+    <div class="theOne">一号展馆</div>
+    <div class="theTwo">二号展馆</div>
+    <div class="theThree">三号展馆</div>
+    <div class="theFour">四号展馆</div>
+    <div class="theFive">五号展馆</div>
+
+</div>
+<div class="mask">
+    <div class="process">
+        <p>页面加载中&emsp;<span>0%</span></p>
+    </div>
+    
+</div>
+</body>
+<script src="./Tween.js"></script>
+    <script src="./index.js" type="module"></script>
+
+</html>

@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@mesh-3d/core": "^1.4.0",
+    "@mesh-3d/engine-ui": "^1.1.4",
+    "@mesh-3d/postprocess": "^1.0.4",
+    "@mesh-3d/three": "^0.131.1232",
+    "@mesh-3d/utils": "^1.0.8"
+  }
+}

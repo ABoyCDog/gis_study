@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pratices3</title>
+</head>
+<style>
+    html,body{
+        margin: 0;
+        overflow: hidden;
+    }
+    .container{
+        display: flex;
+        flex: 1;
+        justify-content: space-between;
+    }
+    .container .left{
+        background-color: aquamarine;
+        flex: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .container .left input{
+        padding: 5px 10px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 3px;
+        background-color: #3498db;
+        color: #fff;
+        cursor: pointer;
+    }
+    .container .right{
+        width: 50%;
+    }
+</style>
+<body>
+    <div class="container">
+        <div class="left">
+            <input type="button" value="更换模型"/>
+            <input type="button" value="更换材质"/>
+            <input type="button" value="更换场景"/>
+        </div>
+        <div class="right"></div>
+    </div>
+
+</body>
+  <!--引入three.js三维引擎-->
+  <!-- <script src="../lib/three/build/three.js"></script> -->
+  <script src="../lib/three/examples/js/controls/OrbitControls.js"></script>
+  <script src="./index.js" type="module"></script>
+</html>
