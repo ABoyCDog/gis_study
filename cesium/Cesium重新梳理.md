@@ -43,7 +43,41 @@ var point = viewer.entities.add({
   });
 ```
 
-### 8.2
+### 8.2 添加一个文字标签
+
+还是使用entities的add方法，来添加物体，其中label代表文字部分，在配置项中设置好相关属性；billboard是广告牌的意思，可以显示图片图标。
+
+```js
+// 添加文字标签和广告牌
+  var label = viewer.entities.add({
+    position: Cesium.Cartesian3.fromDegrees(113.3191, 23.109, 750),
+    label: {
+      text: "广州塔",
+      font: "24px sans-serif",
+      fillColor: Cesium.Color.WHITE,
+      outlineColor: Cesium.Color.BLACK,
+      outlineWidth: 4,
+      // FILL填充文字，OUTLINE勾勒标签，FILL_AND_OUTLINE填充文字和勾勒标签
+      style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+      // 设置文字的偏移量
+      pixelOffset: new Cesium.Cartesian2(0, -24),
+      // 设置文字的显示位置,LEFT /RIGHT /CENTER
+      horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+      // 设置文字的显示位置
+      verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+    },
+    billboard: {
+      image: "./texture/gzt.png",
+      width: 50,
+      height: 50,
+      // 设置广告牌的显示位置
+      verticalOrigin: Cesium.VerticalOrigin.TOP,
+      // 设置广告牌的显示位置
+      horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+    },
+  });
+
+```
 
 # 9.entity实体
 
