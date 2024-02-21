@@ -108,6 +108,29 @@ const airplane = viewer.entities.add({
 
 ![Alt text](image-1.png)
 
+## 8.4 添加一个矩形
+
+传入2个点位参数，就能添加矩形
+
+```js
+  // 使用entity创建矩形
+  var rectangle = viewer.entities.add({
+    rectangle: {
+      coordinates: Cesium.Rectangle.fromDegrees(
+        // 西边的经度
+        90,
+        // 南边维度
+        20,
+        // 东边经度
+        110,
+        // 北边维度
+        30
+      ),
+      material: Cesium.Color.RED.withAlpha(0.5),
+    },
+  });
+```
+
 # 9.entity实体
 
 # 10.primitive图元
