@@ -76,8 +76,37 @@ var point = viewer.entities.add({
       horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
     },
   });
-
 ```
+
+效果如下：
+
+![Alt text](image.png)
+
+## 8.3 添加飞机模型
+
+```js
+// 添加3D模型
+const airplane = viewer.entities.add({
+    name: "Airplane",
+    position: Cesium.Cartesian3.fromDegrees(113.3191, 23.109, 1500),
+    model: {
+            uri: "./model/Air.glb",
+            // 设置飞机的最小像素
+            minimumPixelSize: 128,
+            // 设置飞机的轮廓
+            silhouetteSize: 5,
+            // 设置轮廓的颜色
+            silhouetteColor: Cesium.Color.WHITE,
+            // 设置相机距离模型多远的距离显示
+            distanceDisplayCondition: new Cesium.DistanceDisplayCondition(
+                    0,
+                    200000
+            ),
+    },
+});
+```
+
+![Alt text](image-1.png)
 
 # 9.entity实体
 
