@@ -21,6 +21,6 @@
   + 在React中的组件
   + 纹理绘制方法
 
-## leaflet
+## Leaflet
 
-## glsl
+## GLSL
